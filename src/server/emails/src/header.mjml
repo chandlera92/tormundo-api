@@ -1,0 +1,12 @@
+<mj-wrapper padding="0" border-top="8px solid orange">
+  <mj-section padding="0">
+
+    <mj-column>
+      <mj-text align="right" padding="5 0">
+        Tormundo
+      </mj-text>
+    </mj-column>
+
+  </mj-section>
+  
+</mj-wrapper>

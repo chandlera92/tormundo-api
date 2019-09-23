@@ -1,0 +1,12 @@
+<mj-section padding="0 0">
+
+  <mj-column>
+    <mj-text padding="0" line-height="1">
+      Kind regards,
+    </mj-text>
+    <mj-text line-height="1.2" padding="0">
+      Tormundo Team
+    </mj-text>
+  </mj-column>
+
+</mj-section>

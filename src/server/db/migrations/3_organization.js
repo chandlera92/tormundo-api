@@ -1,0 +1,284 @@
+exports.up = (knex, Promise) => {
+    return knex.schema
+        .createTable('organization', (table) => {
+            table.increments('id').primary();
+            table.string('name').notNull().unique();
+            table.integer('owner').references('id').inTable('users').notNull();
+            table.integer('country_id').references('id').inTable('countries').notNullable().defaultsTo(230);
+            table.integer('language_id').references('id').inTable('languages').notNullable().defaultsTo(1);
+            table.boolean('public').notNullable().defaultTo(false);
+            table.timestamp('public_at').defaultTo(null);
+            table.boolean('suspended').notNullable().defaultTo(false);
+            table.timestamp('suspended_at').defaultTo(null);
+            table.boolean('accepted').notNullable().defaultTo(false);
+            table.timestamp('accepted_at').defaultTo(null);
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultTo(null);
+            table.integer('active_projects_permitted').defaultsTo(3);
+        })
+        .createTable('organization_official_document', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()')).notNull();
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultTo(null);
+            table.string('name');
+            table.string('description');
+            table.string('type').notNullable();
+            table.string('key').notNullable();
+            table.string('loc').notNullable();
+        })
+        .createTable('organization_file', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()')).notNull();
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultTo(null);
+            table.string('name');
+            table.string('description');
+            table.string('type').notNullable();
+            table.string('key').notNullable();
+            table.string('loc').notNullable();
+        })
+        .createTable('organization_file_history', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_file_id').notNullable();
+            table.string('name');
+            table.string('description');
+            table.string('type').notNullable();
+            table.string('key').notNullable();
+            table.string('loc').notNullable();
+            table.integer('created_by').notNullable();
+            table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_card', (table) => {
+            table.increments('id').primary();
+            table.string('description');
+            table.boolean('public').defaultsTo(false);
+            table.integer('image').references('id').inTable('organization_file').defaultsTo(null);
+            table.integer('language_id').references('id').inTable('languages').notNullable().defaultsTo(1);
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultsTo('now()');
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultsTo(null);
+        })
+        .createTable('organization_card_history', (table) => {
+            table.increments('id').primary();
+            table.string('description');
+            table.integer('card_id').notNullable();
+            table.boolean('public').notNullable();
+            table.integer('image');
+            table.integer('language_id').notNullable();
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').defaultsTo('now()');
+        })
+        .createTable('organization_card_removed', (table) => {
+            table.increments('id').primary();
+            table.string('description');
+            table.integer('card_id').notNullable();
+            table.boolean('public').notNullable();
+            table.integer('image');
+            table.integer('language_id').notNullable();
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').defaultsTo('now()');
+            table.integer('removed_by').notNullable();
+            table.timestamp('removed_at').defaultTo('now()');
+        })
+        .createTable('organization_profile', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').references('id').inTable('organization').notNullable();
+            table.string('description');
+            table.boolean('public').defaultsTo(false);
+            table.integer('cover_image').references('id').inTable('organization_file').defaultsTo(null);
+            table.integer('language_id').references('id').inTable('languages').notNullable().defaultsTo(1);
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultsTo('now()');
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultsTo(null);
+        })
+        .createTable('organization_profile_history', (table) => {
+            table.increments('id').primary();
+            table.integer('profile_id').notNullable();
+            table.integer('organization_id').notNullable();
+            table.string('description');
+            table.boolean('public').notNullable();
+            table.integer('cover_image');
+            table.integer('language_id').notNullable();
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').defaultsTo('now()');
+        })
+        .createTable('organization_profile_removed', (table) => {
+            table.increments('id').primary();
+            table.integer('profile_id').notNullable();
+            table.integer('organization_id').notNullable();
+            table.string('description');
+            table.boolean('public').notNullable();
+            table.integer('cover_image');
+            table.integer('language_id').notNullable();
+            table.integer('created_by').notNullable();
+            table.timestamp('created_at').notNullable();
+            table.integer('removed_by').notNullable();
+            table.timestamp('removed_at').defaultTo('now()');
+        })
+        .createTable('organization_member_permissions', (table) => {
+            table.increments('id').primary();
+            table.integer('level').defaultTo(null);
+            table.boolean('create_official').defaultsTo(false);
+            table.boolean('create_file').defaultsTo(false);
+            table.boolean('modify_file').defaultsTo(false);
+            table.boolean('remove_file').defaultsTo(false);
+            table.boolean('invite_members').defaultsTo(false);
+            table.boolean('create_profile').defaultsTo(false);
+            table.boolean('edit_profile').defaultsTo(false);
+            table.boolean('edit_settings').defaultsTo(false);
+            table.boolean('edit_member_permissions').defaultsTo(false);
+            table.boolean('delete_member').defaultsTo(false);
+            table.boolean('delete_profile').defaultsTo(false);
+            table.boolean('create_account').defaultsTo(false);
+            table.boolean('delete_account').defaultsTo(false);
+            table.boolean('create_account_access').defaultsTo(false);
+            table.boolean('delete_account_access').defaultsTo(false);
+            table.boolean('create_project_access').defaultsTo(false);
+            table.boolean('delete_project_access').defaultsTo(false);
+            table.boolean('create_project').defaultsTo(false);
+            table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('created_by').references('id').inTable('users').notNull();
+        })
+        .createTable('organization_member_permissions_history', (table) => {
+            table.increments('id').primary();
+            table.integer('level');
+            table.boolean('invite_members').notNull();
+            table.boolean('create_profile').notNull();
+            table.boolean('edit_profile').notNull();
+            table.boolean('edit_settings').notNull();
+            table.boolean('edit_member_permissions').notNull();
+            table.boolean('delete_member').notNull();
+            table.boolean('delete_profile').notNull();
+            table.boolean('create_account').notNull();
+            table.boolean('edit_account').notNull();
+            table.boolean('delete_account').notNull();
+            table.boolean('create_account_access').notNull();
+            table.boolean('delete_account_access').notNull();
+            table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('organization_member_permissions_id').notNull();
+            table.integer('created_by').notNull();
+        })
+        .createTable('organization_member', (table) => {
+            table.increments('id').primary();
+            table.integer('user_id').references('id').inTable('users').notNull();
+            table.integer('organization_member_permissions_id').references('id').inTable('organization_member_permissions').notNull();
+            table.integer('organization_id').references('id').inTable('organization').notNull();
+            table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('created_by').references('id').inTable('users').notNull();
+        })
+        // TODO: Consider possibilities to implement a way to store members old permissions after they have been removed.
+        .createTable('organization_member_history', (table) => {
+            table.increments('id').primary();
+            table.integer('user_id').notNull();
+            table.integer('organization_id').notNull();
+            table.integer('organization_member_permissions_id').notNull();
+            table.timestamp('removed_at').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('removed_by').notNull();
+            table.timestamp('created_at').notNull().defaultsTo(knex.raw('now()'));
+            table.integer('created_by').notNull();
+        })
+        .createTable('organization_member_invitation', (table) => {
+            table.increments('id').primary();
+            table.integer('user_id').references('id').inTable('users').notNull();
+            table.integer('sent_by').references('id').inTable('users').notNull();
+            table.integer('organization_id').references('id').inTable('organization').notNull();
+            table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_member_invitation_history', (table) => {
+            table.increments('id').primary();
+            table.integer('user_id').notNull();
+            table.integer('organization_id').notNull();
+            table.boolean('accepted').defaultTo(null);
+            table.timestamp('answered').notNullable().defaultTo(knex.raw('now()'));
+            table.integer('sent_by').notNull();
+            table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_account', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').references('id').inTable('organization').notNull();
+            table.string('name').unique();
+            table.string('description');
+            table.integer('profile_picture').references('id').inTable('organization_file').defaultsTo(null);
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()'));
+            table.integer('modified_by').references('id').inTable('users').defaultsTo(null);
+            table.timestamp('modified_at').defaultsTo(null);
+        })
+        .createTable('organization_account_history', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_account_id').notNull();
+            table.integer('organization_id').notNull();
+            table.string('name');
+            table.string('description');
+            table.integer('profile_picture');
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_account_removed', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_account_id').notNull();
+            table.integer('organization_id').notNull();
+            table.string('name').unique();
+            table.string('description');
+            table.integer('profile_picture');
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()'));
+            table.integer('removed_by').notNull();
+            table.timestamp('removed_at').defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_account_access', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').references('id').inTable('organization').notNull();
+            table.integer('organization_member').references('id').inTable('organization_member').notNull();
+            table.integer('organization_account').references('id').inTable('organization_account').notNull();
+            table.integer('created_by').references('id').inTable('users').notNull();
+            table.timestamp('created_at').defaultTo(knex.raw('now()'));
+        })
+        .createTable('organization_account_access_history', (table) => {
+            table.increments('id').primary();
+            table.integer('organization_id').notNull();
+            table.integer('organization_member').notNull();
+            table.integer('organization_account').notNull();
+            table.integer('created_by').notNull();
+            table.timestamp('created_at').notNull();
+            table.integer('removed_by').notNull();
+            table.timestamp('removed_at').defaultTo(knex.raw('now()'));
+        })
+};
+
+exports.down = (knex, Promise) => {
+    return knex.schema
+        .dropTable('organization_account_access_history')
+        .dropTable('organization_account_access')
+        .dropTable('organization_account_removed')
+        .dropTable('organization_account_history')
+        .dropTable('organization_account')
+        .dropTable('organization_member_invitation_history')
+        .dropTable('organization_member_invitation')
+        .dropTable('organization_member_history')
+        .dropTable('organization_member')
+        .dropTable('organization_member_permissions_history')
+        .dropTable('organization_member_permissions')
+        .dropTable('organization_profile_history')
+        .dropTable('organization_profile_removed')
+        .dropTable('organization_profile')
+        .dropTable('organization_card_removed')
+        .dropTable('organization_card_history')
+        .dropTable('organization_card')
+        .dropTable('organization_file_history')
+        .dropTable('organization_file')
+        .dropTable('organization_official_document')
+        .dropTable('organization')
+};

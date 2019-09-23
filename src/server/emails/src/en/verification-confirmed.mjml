@@ -1,0 +1,44 @@
+<mjml>
+
+  <mj-head>
+  </mj-head>
+
+  <mj-body>
+    <mj-container>
+
+      <mj-include path="../header.mjml" />
+
+      <mj-section padding="0">
+        <mj-column>
+          <mj-text align="left" font-size="20px" padding="0">
+            <strong>Verification process complete!</strong>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding="10 0">
+
+        <mj-column>
+          <mj-text padding="0" align="left">
+            Dear {{name}},
+          </mj-text>
+        </mj-column>
+
+      </mj-section>
+
+      <mj-section padding="0 0 10 0">
+
+        <mj-column>
+          <mj-text padding="0" align="left">
+            Your account has been successfully verified.
+          </mj-text>
+        </mj-column>
+
+      </mj-section>
+
+      <mj-include path="../footer.mjml" />
+
+    </mj-container>
+  </mj-body>
+
+</mjml>
